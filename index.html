@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teachable Machine Mold Detector</title>
+    <!-- Load TensorFlow.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <!-- Load the Teachable Machine library for image models -->
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.4/dist/teachablemachine-image.min.js"></script>
+</head>
+<body>
+    <h1>Mold Detection</h1>
+
+    <!-- File input for uploading an image -->
+    <input type="file" id="fileInput" accept="image/*" />
+    
+    <!-- Display the result of the prediction -->
+    <div id="result"></div>
+
+    <!-- Script to handle image uploads and model predictions -->
+    <script>
+        // Path to your Teachable Machine model
+        const modelURL = 'https://teachablemachine.withgoogle.com/models/JbNhrDeuF/';
+
+        let model;
+
+        // Load the model
+        async function loadModel() {
+            model = await tmImage.load(modelURL);
+            console.log("Model loaded successfully!");
+        }
+
+        // Prepare image and make prediction
+        async function predictImage(imageElement) {
+            const prediction = await model.predict(imageElement);
+            console.log(prediction);
+
+            // Display the prediction result (showing the className of the top prediction)
+            document.getElementById("result").innerText = `Prediction: ${prediction[0].className} with ${Math.round(prediction[0].probability * 100)}% confidence`;
+        }
+
+        // Handle file input change (when an image is uploaded)
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+
+            img.onload = function() {
+                predictImage(img);
+            };
+        });
+
+        // Load the model when the page starts
+        loadModel();
+    </script>
+</body>
+</html>
